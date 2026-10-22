@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://cit78ynwj1ilt"]
+
+[ext_resource type="Script" uid="uid://7whyfrhfl48h" path="res://scenes/character/character.gd" id="1_dj427"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_28f8d"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jbof3"]
+albedo_color = Color(1, 0.019607844, 0, 1)
+
+[node name="Character" type="Node3D" unique_id=725942461]
+script = ExtResource("1_dj427")
+
+[node name="VisualPivot" type="Node3D" parent="." unique_id=1153628958]
+
+[node name="Model" type="MeshInstance3D" parent="VisualPivot" unique_id=1331779177]
+mesh = SubResource("BoxMesh_28f8d")
+surface_material_override/0 = SubResource("StandardMaterial3D_jbof3")
