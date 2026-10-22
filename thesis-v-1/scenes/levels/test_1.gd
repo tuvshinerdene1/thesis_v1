@@ -15,15 +15,28 @@ func _ready():
 	
 	# 0 = empty, 1 = tree/obstacle, 2 = leaf
 	test_level.grid_data = [
-		[1, 1, 1, 1, 1],
-		[1, 0, 0, 2, 1],
-		[1, 0, 0, 0, 1],
-		[1, 0, 0, 0, 1],
-		[1, 1, 1, 1, 1]
+		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	]
 	
 	grid_manager.load_level(test_level, character)
 	var test_commands: Array[String] = [
+		"move",
+		"turn_right",
+		"move",
+		"turn_left",
+		"move",
+		"move",
+		"move",
+		"move",
 		"move",
 		"turn_right",
 		"move",
@@ -45,8 +58,8 @@ func _setup_camera():
 	var camera = Camera3D.new()
 	add_child(camera)
 	
-	camera.global_position = Vector3(2.0, 7.0, 6.0)
-	camera.look_at(Vector3(2.0, 0.0, 2.0), Vector3.UP)
+	camera.global_position = Vector3(4.0, 12.0, 14.0)
+	camera.look_at(Vector3(4.0, 0.0, 4.0), Vector3.UP)
 	camera.make_current()
 	
 func _setup_lighting():
@@ -62,10 +75,10 @@ func _setup_lighting():
 	add_child(env_node)
 	var environment = Environment.new()
 	environment.background_mode = Environment.BG_COLOR
-	environment.background_color = Color(0.53, 0.81, 0.92)
+	environment.background_color = Color(0.602, 0.834, 0.953, 1.0)
 	
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	environment.ambient_light_color = Color(0.75, 0.85, 0.95)
+	environment.ambient_light_color = Color(1.0, 1.0, 1.0, 1.0)
 	environment.ambient_light_energy = 0.6
 	
 	env_node.environment = environment
