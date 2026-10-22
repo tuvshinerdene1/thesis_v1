@@ -1,6 +1,8 @@
 extends Node3D
 class_name GridCharacter
 
+
+signal movement_finished
 #Cardomal directions 
 enum Direction {NORTH, EAST, SOUTH, WEST}
 # direction vectors mapped to Vector2i ( X= columns, Y = rows)
@@ -46,7 +48,10 @@ func move_forward(tile_size: float = 1.0) -> void:
 	is_moving = true
 	var tween = create_tween()
 	tween.tween_property(self, "global_position", target_world_pos, step_duration)
-	tween.finished.connect(func():is_moving = false)
+	tween.finished.connect(func():
+		is_moving = false
+		movement_finished.emit()
+	)
 
 func turn_left() -> void:
 	if is_moving:
@@ -73,5 +78,8 @@ func _animate_rotation() -> void:
 	var target_angle = DIRECTION_ANGLES[current_direction]
 	var tween = create_tween()
 	tween.tween_property(visual_pivot, "rotation_degrees:y", target_angle, step_duration * 0.8 )
-	tween.finished.connect(func(): is_moving = false)
+	tween.finished.connect(func(): 
+		is_moving = false
+		movement_finished.emit()
+	)
 	
