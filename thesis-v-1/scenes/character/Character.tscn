@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://7whyfrhfl48h" path="res://scenes/character/character.gd" id="1_dj427"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_28f8d"]
+size = Vector3(0.8, 0.8, 0.8)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jbof3"]
 albedo_color = Color(1, 0.019607844, 0, 1)

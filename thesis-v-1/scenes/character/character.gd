@@ -22,6 +22,7 @@ const DIRECTION_ANGLES = {
 
 @export var step_duration: float = 0.3
 @onready var visual_pivot: Node3D = $VisualPivot
+@onready var mesh_instance: MeshInstance3D = $VisualPivot/Model
 
 # Grid position tracking
 var grid_position: Vector2i = Vector2i.ZERO
@@ -31,9 +32,10 @@ var is_moving: bool = false
 func initialize_at_grid(start_grid_pos: Vector2i, start_dir: Direction = Direction.EAST, tile_size: float = 1.0):
 	grid_position = start_grid_pos
 	current_direction = start_dir
+	var size_y = mesh_instance.mesh.get_aabb().size.y * mesh_instance.scale.y
 	
 	# snap position and rotation in 3d world space
-	global_position = Vector3(grid_position.x * tile_size, 0, grid_position.y*tile_size)
+	global_position = Vector3(grid_position.x * tile_size,size_y/2 , grid_position.y*tile_size)
 	visual_pivot.rotation_degrees.y = DIRECTION_ANGLES[current_direction]
 	
 #-----------------------------
