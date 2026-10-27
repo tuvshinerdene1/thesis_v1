@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://cit78ynwj1ilt" path="res://scenes/character/Character.tscn" id="1_hlh4d"]
 [ext_resource type="Script" uid="uid://d3447bwc37udk" path="res://scripts/GridManager.gd" id="1_mfkym"]
 [ext_resource type="Script" uid="uid://burxbmb2spsms" path="res://scripts/CommandRunner.gd" id="2_6sdd5"]
+[ext_resource type="Script" uid="uid://brayrn2fcwbib" path="res://scripts/StateMachine/fsm_runner.gd" id="5_tvpen"]
 
 [node name="Test1" type="Node3D" unique_id=1455117866]
 script = ExtResource("1_6sdd5")
@@ -15,3 +16,6 @@ script = ExtResource("1_mfkym")
 script = ExtResource("2_6sdd5")
 
 [node name="Character" parent="." unique_id=725942461 instance=ExtResource("1_hlh4d")]
+
+[node name="FSMRunner" type="Node" parent="." unique_id=1023868886]
+script = ExtResource("5_tvpen")

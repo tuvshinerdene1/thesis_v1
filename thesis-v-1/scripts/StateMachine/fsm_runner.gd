@@ -28,7 +28,7 @@ func _evaluate_current_state():
 	if not is_running or not current_state:
 		return
 	print("Evaluating state: ", current_state.state_name)
-	# Search through the state' srows from top to bottom
+	# Search through the state's rows from top to bottom
 	var matched_rule: FSMRule = null
 	for rule in current_state.rules:
 		if _check_all_conditions(rule.conditions):
@@ -41,28 +41,36 @@ func _evaluate_current_state():
 			if not is_running:
 				return
 			await _execute_action(action)
-			
-			
+		# handle state transition
+		var next_name = matched_rule.target_state_name
+		if next_name != "" and states.has(next_name):
+			current_state = states[next_name]
+		# if target_name is empty, it stays in the current state.
 		
+		# loop to evaluate the next state/step
+		if is_running:
+			_evaluate_current_state()
+	else:
+		print("fsm_runner.gd: No matching rules found in state: ", current_state.state_name)
+		stop()
 		
-		
-func _check_all_conditions(conditions: Array[String]) -> bool:
+func _check_all_conditions(conditions: Array) -> bool:
 	if conditions.is_empty():
 		return true
 	for cond in conditions:
-		if not _evaluate_single_condition(cond):
+		if not _evaluate_single_condition(str(cond)):
 			return false
 	return true
 
-
 func _evaluate_single_condition(condition: String) -> bool:
-	var front_pos = character.get_front_grid_position()
-	match condition:
-		"front_is_tree":
-			return grid_manager.is_tree_at(front_pos)
-		"front_is_clear":
-			return not grid_manager.is_tree_at(front_pos)
-		"front_has_leaf":
-			return grid_manager.has_leaf_at(front_pos)
-		_:
-			return false
+	var condition_callable = ConditionLibrary.get_condition_callable(condition, character, grid_manager)
+	return condition_callable.call()
+
+func _execute_action(action:String) -> void:
+	var action_callable = ActionLibrary.get_action_callable(action, character, grid_manager, self)
+	await action_callable.call()
+
+func stop() -> void:
+	is_running = false
+	print("FSM stopped.")
+	

@@ -2,7 +2,7 @@ extends Node3D
 
 @onready var grid_manager: GridManager = $GridManager
 @onready var character: GridCharacter = $Character
-@onready var command_runner: CommandRunner = $CommandRunner
+@onready var fsm_runner: FSMRunner = $FSMRunner
 
 func _ready():
 	_setup_camera()
@@ -28,28 +28,48 @@ func _ready():
 	]
 	
 	grid_manager.load_level(test_level, character)
-	var test_commands: Array[String] = [
-		"move",
-		"turn_right",
-		"move",
-		"turn_left",
-		"move",
-		"move",
-		"move",
-		"move",
-		"move",
-		"turn_right",
-		"move",
-		"turn_left",
-		"move"
-	]
 	
 	await get_tree().create_timer(1.0).timeout
 	
-	command_runner.character = character
-	command_runner.grid_manager = grid_manager
-	command_runner.load_program(test_commands)
-	command_runner.run_program()
+	var states = _create_test_fsm()
+	
+	fsm_runner.character = character
+	fsm_runner.grid_manager = grid_manager
+	fsm_runner.load_fsm(states, "StateMove")
+	fsm_runner.start()
+	
+func _create_test_fsm() -> Array[FSMState]:
+	# --- State 1: Move Forward State ---
+	var state_move = FSMState.new()
+	state_move.state_name = "StateMove"
+	
+	# Rule 1: If front is clear -> move forward, stay in "StateMove" (empty target means loop current state)
+	var rule_move = FSMRule.new()
+	rule_move.conditions = ["front_is_clear"]
+	rule_move.actions = ["move"]
+	rule_move.target_state_name = "StateMove"
+	state_move.rules.append(rule_move)
+	
+	# Rule 2: If front is NOT clear (hit a tree) -> transition to StateTurn
+	var rule_blocked = FSMRule.new()
+	rule_blocked.conditions = ["front_is_tree"]
+	rule_blocked.actions = [] # No actions, just transition
+	rule_blocked.target_state_name = "StateTurn"
+	state_move.rules.append(rule_blocked)
+	
+	
+	# --- State 2: Turn State ---
+	var state_turn = FSMState.new()
+	state_turn.state_name = "StateTurn"
+	
+	# Rule 1: Turn right and go back to StateMove
+	var rule_turn = FSMRule.new()
+	rule_turn.conditions = [] # Always execute if reached
+	rule_turn.actions = ["turn_right"]
+	rule_turn.target_state_name = "StateMove"
+	state_turn.rules.append(rule_turn)
+	
+	return [state_move, state_turn]
 	
 func _setup_camera():
 	if get_viewport().get_camera_3d() != null:
