@@ -43,6 +43,11 @@ func _evaluate_current_state():
 			await _execute_action(action)
 		# handle state transition
 		var next_name = matched_rule.target_state_name
+		
+		if next_name.to_lower() == "stop" or next_name.to_lower() == "exit":
+			stop()
+			return
+		
 		if next_name != "" and states.has(next_name):
 			current_state = states[next_name]
 		# if target_name is empty, it stays in the current state.
