@@ -1,6 +1,13 @@
 class_name ConditionLibrary
 extends RefCounted
 
+static func get_all_conditions() -> Array[String]:
+	return [
+		"front_is_clear",
+		"front_is_tree",
+		"front_has_leaf"
+	]
+
 static func get_condition_callable(condition_name: String, character: GridCharacter, grid_manager: GridManager) -> Callable:
 	var front_pos = character.get_front_grid_position()
 	

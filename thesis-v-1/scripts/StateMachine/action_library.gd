@@ -1,6 +1,13 @@
 class_name  ActionLibrary
 extends RefCounted
 
+static func get_all_actions() -> Array[String]:
+	return [
+		"move",
+		"turn_left",
+		"turn_right"
+	]
+
 # Static helper or resource registry that returns a Callable for any action string
 static func get_action_callable(action_name: String, character: GridCharacter, grid_manager: GridManager, runner: FSMRunner) -> Callable:
 	match action_name:

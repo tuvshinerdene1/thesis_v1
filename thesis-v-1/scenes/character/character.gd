@@ -70,7 +70,7 @@ func turn_right() -> void:
 	_animate_rotation()
 
 #-----------------------------
-# SENSOR HELPER FUNCTIONS
+# SENSOR & HELPER FUNCTIONS
 #-----------------------------
 func get_front_grid_position() -> Vector2i:
 	return grid_position + DIRECTION_VECTORS[current_direction]

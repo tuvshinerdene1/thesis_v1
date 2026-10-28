@@ -1,0 +1,57 @@
+[gd_scene format=3 uid="uid://7lysjnxke5i"]
+
+[ext_resource type="Script" uid="uid://cnv1cmdnjnq87" path="res://scenes/fsm_editor/fsm_editor.gd" id="1_x1k0t"]
+
+[node name="FsmEditor" type="Control" unique_id=1837411341]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_x1k0t")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1672379103]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="LeftPanel" type="VBoxContainer" parent="HBoxContainer" unique_id=2078842431]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/LeftPanel" unique_id=724020755]
+layout_mode = 2
+
+[node name="StateItemList" type="ItemList" parent="HBoxContainer/LeftPanel" unique_id=822840682]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/LeftPanel" unique_id=1290323633]
+layout_mode = 2
+
+[node name="AddButton" type="Button" parent="HBoxContainer/LeftPanel/HBoxContainer" unique_id=1174085426]
+layout_mode = 2
+
+[node name="DeleteButton" type="Button" parent="HBoxContainer/LeftPanel/HBoxContainer" unique_id=90299778]
+layout_mode = 2
+
+[node name="HSeparator" type="HSeparator" parent="HBoxContainer/LeftPanel" unique_id=1632985099]
+layout_mode = 2
+
+[node name="SetAsStartButton" type="Button" parent="HBoxContainer/LeftPanel/HSeparator" unique_id=478532629]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="RightPanel" type="VBoxContainer" parent="HBoxContainer" unique_id=1218194750]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="HBoxContainer/RightPanel" unique_id=291776915]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/RightPanel" unique_id=174428444]
+layout_mode = 2
+
+[node name="RulesRowContainer" type="VBoxContainer" parent="HBoxContainer/RightPanel/ScrollContainer" unique_id=1416903742]
+layout_mode = 2
+
+[node name="AddRuleButton" type="Button" parent="HBoxContainer/RightPanel" unique_id=901495908]
+layout_mode = 2
+
+[node name="PlayButton" type="Button" parent="HBoxContainer" unique_id=929375440]
+layout_mode = 2

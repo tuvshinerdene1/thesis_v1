@@ -5,6 +5,7 @@ class_name GridManager
 
 var tree_material: StandardMaterial3D
 var leaf_material: StandardMaterial3D
+var coin_material: StandardMaterial3D
 
 var active_grid_objects: Dictionary = {}
 
@@ -14,6 +15,9 @@ func _ready():
 	
 	leaf_material = StandardMaterial3D.new()
 	leaf_material.albedo_color = Color(0.13, 0.7, 0.3)
+	
+	coin_material = StandardMaterial3D.new()
+	coin_material.albedo_color = Color(0.979, 0.865, 0.165, 1.0)
 
 func load_level(level: LevelData, character: GridCharacter):
 	# clear previous level objects 
@@ -35,6 +39,9 @@ func load_level(level: LevelData, character: GridCharacter):
 			elif cell_type == 2:
 				_spawn_colored_cube(world_pos, leaf_material)
 				active_grid_objects[grid_pos] = "leaf"
+			elif cell_type == 3:
+				_spawn_colored_cube(world_pos, coin_material)
+				active_grid_objects [grid_pos] = "coin"
 	# initialize character position from level data 
 	character.initialize_at_grid(level.start_position, level.start_direction, tile_size)
 	
@@ -65,3 +72,5 @@ func is_tree_at(pos:Vector2i):
 func has_leaf_at(pos:Vector2i):
 	return active_grid_objects.get(pos, "") == "leaf"
 	
+func has_coin_at(pos: Vector2i):
+	return active_grid_objects.get(pos, "") == "coin"
