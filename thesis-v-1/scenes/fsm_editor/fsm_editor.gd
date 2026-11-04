@@ -1,5 +1,8 @@
 extends Control
 
+signal fsm_executed(states: Array[FSMState], start_state_name: String)
+
+
 @export var fsm_runner: FSMRunner
 @export var game_world: Node3D
 
@@ -10,11 +13,22 @@ var start_state_name = ""
 
 @onready var state_item_list: ItemList = $HBoxContainer/LeftPanel/StateItemList
 @onready var rules_row_container: VBoxContainer = $HBoxContainer/RightPanel/ScrollContainer/RulesRowContainer
-@onready var play_button: Button = $HBoxContainer/PlayButton
+
+@onready var play_button: Button = $PlayButton
+@onready var add_state_button: Button = $HBoxContainer/LeftPanel/HBoxContainer/AddButton
+@onready var delete_state_button: Button = $HBoxContainer/LeftPanel/HBoxContainer/DeleteButton
+@onready var set_start_button: Button =  $HBoxContainer/LeftPanel/HSeparator/SetAsStartButton
+@onready var add_rule_button: Button = $HBoxContainer/RightPanel/AddRuleButton
+
 
 
 func _ready() -> void:
 	play_button.pressed.connect(_on_play_pressed)
+	add_state_button.pressed.connect(_on_add_state_pressed)
+	delete_state_button.pressed.connect(_on_delete_state_pressed)
+	set_start_button.pressed.connect(_on_set_start_state_pressed)
+	add_rule_button.pressed.connect(_on_add_rule_pressed)
+	state_item_list.item_selected.connect(_on_state_item_selected)
 
 
 func _on_play_pressed() -> void:
@@ -26,11 +40,7 @@ func _on_play_pressed() -> void:
 		print("Error: Cannot play. Start state not set!")
 		return
 	print("Starting FSM with start state: ", start_state_name)
-	
-	self.visible = false
-	
-	fsm_runner.load_fsm(states, start_state_name)
-	fsm_runner.start()
+	emit_signal("fsm_executed", states, start_state_name)
 
 # create state
 func _on_add_state_pressed() -> void:
@@ -51,6 +61,7 @@ func _on_delete_state_pressed() -> void:
 
 # refresh state ui
 func _refresh_state_list() -> void:
+	print("refreshed state list")
 	state_item_list.clear()
 	for i in range (states.size()):
 		var state = states[i]
@@ -77,6 +88,7 @@ func _create_rule_row_ui(rule:FSMRule, rule_index: int) -> void:
 	# condition dropdown
 	var cond_button = OptionButton.new()
 	var all_conditions = ConditionLibrary.get_all_conditions()
+	
 	for cond in all_conditions:
 		cond_button.add_item(cond)
 	
@@ -95,6 +107,7 @@ func _create_rule_row_ui(rule:FSMRule, rule_index: int) -> void:
 	# action dropdown
 	var action_button = OptionButton.new()
 	var all_actions = ActionLibrary.get_all_actions()
+	
 	for action in all_actions:
 		action_button.add_item(action)
 	
@@ -149,7 +162,7 @@ func _create_rule_row_ui(rule:FSMRule, rule_index: int) -> void:
 	row_hbox.add_child(delete_btn)
 	
 	rules_row_container.add_child(row_hbox)
-	
+
 func _on_add_rule_pressed() -> void:
 	if selected_state_index < 0:
 		return

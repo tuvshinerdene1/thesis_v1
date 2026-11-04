@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://burxbmb2spsms" path="res://scripts/CommandRunner.gd" id="3_xtm2k"]
 [ext_resource type="PackedScene" uid="uid://cit78ynwj1ilt" path="res://scenes/character/Character.tscn" id="4_h8kvj"]
 [ext_resource type="Script" uid="uid://brayrn2fcwbib" path="res://scripts/StateMachine/fsm_runner.gd" id="5_ni07a"]
+[ext_resource type="PackedScene" uid="uid://7lysjnxke5i" path="res://scenes/fsm_editor/fsm_editor.tscn" id="6_0rb1a"]
 
 [node name="Test2" type="Node3D" unique_id=1455117866]
 script = ExtResource("1_6lwva")
@@ -19,3 +20,7 @@ script = ExtResource("3_xtm2k")
 
 [node name="FSMRunner" type="Node" parent="." unique_id=1023868886]
 script = ExtResource("5_ni07a")
+
+[node name="FsmEditor" parent="." unique_id=1837411341 node_paths=PackedStringArray("fsm_runner", "game_world") instance=ExtResource("6_0rb1a")]
+fsm_runner = NodePath("../FSMRunner")
+game_world = NodePath("..")

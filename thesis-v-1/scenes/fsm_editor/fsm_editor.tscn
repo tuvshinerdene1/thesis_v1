@@ -4,21 +4,32 @@
 
 [node name="FsmEditor" type="Control" unique_id=1837411341]
 layout_mode = 3
-anchors_preset = 0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_x1k0t")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1672379103]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="HBoxContainer" type="VBoxContainer" parent="." unique_id=127338870]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="LeftPanel" type="VBoxContainer" parent="HBoxContainer" unique_id=2078842431]
+custom_minimum_size = Vector2(280, 0)
 layout_mode = 2
+size_flags_horizontal = 0
 
 [node name="Label" type="Label" parent="HBoxContainer/LeftPanel" unique_id=724020755]
 layout_mode = 2
+text = "\"FSM States\""
 
 [node name="StateItemList" type="ItemList" parent="HBoxContainer/LeftPanel" unique_id=822840682]
+custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="HBoxContainer/LeftPanel" unique_id=1290323633]
@@ -26,25 +37,36 @@ layout_mode = 2
 
 [node name="AddButton" type="Button" parent="HBoxContainer/LeftPanel/HBoxContainer" unique_id=1174085426]
 layout_mode = 2
+text = "Add State"
 
 [node name="DeleteButton" type="Button" parent="HBoxContainer/LeftPanel/HBoxContainer" unique_id=90299778]
 layout_mode = 2
+text = "Delete State"
 
 [node name="HSeparator" type="HSeparator" parent="HBoxContainer/LeftPanel" unique_id=1632985099]
 layout_mode = 2
 
 [node name="SetAsStartButton" type="Button" parent="HBoxContainer/LeftPanel/HSeparator" unique_id=478532629]
 layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
+offset_right = 139.0
+offset_bottom = 31.0
+text = "Set as Start state"
+
+[node name="Control" type="Control" parent="HBoxContainer" unique_id=1133843907]
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
 
 [node name="RightPanel" type="VBoxContainer" parent="HBoxContainer" unique_id=1218194750]
+custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
+size_flags_horizontal = 0
 
 [node name="Label" type="Label" parent="HBoxContainer/RightPanel" unique_id=291776915]
 layout_mode = 2
+text = "Rule matrix"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/RightPanel" unique_id=174428444]
+custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 
 [node name="RulesRowContainer" type="VBoxContainer" parent="HBoxContainer/RightPanel/ScrollContainer" unique_id=1416903742]
@@ -52,6 +74,12 @@ layout_mode = 2
 
 [node name="AddRuleButton" type="Button" parent="HBoxContainer/RightPanel" unique_id=901495908]
 layout_mode = 2
+text = "Add rule "
 
-[node name="PlayButton" type="Button" parent="HBoxContainer" unique_id=929375440]
-layout_mode = 2
+[node name="PlayButton" type="Button" parent="." unique_id=929375440]
+layout_mode = 0
+offset_left = 1059.0
+offset_top = 523.0
+offset_right = 1136.0
+offset_bottom = 638.0
+text = "play"
