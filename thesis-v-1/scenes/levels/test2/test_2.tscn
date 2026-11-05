@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://b842qmgxs5cj6" path="res://scenes/levels/test2/test_2.gd" id="1_6lwva"]
 [ext_resource type="Script" uid="uid://d3447bwc37udk" path="res://scripts/GridManager.gd" id="2_0rb1a"]
-[ext_resource type="Script" uid="uid://burxbmb2spsms" path="res://scripts/CommandRunner.gd" id="3_xtm2k"]
 [ext_resource type="PackedScene" uid="uid://cit78ynwj1ilt" path="res://scenes/character/Character.tscn" id="4_h8kvj"]
 [ext_resource type="Script" uid="uid://brayrn2fcwbib" path="res://scripts/StateMachine/fsm_runner.gd" id="5_ni07a"]
 [ext_resource type="PackedScene" uid="uid://7lysjnxke5i" path="res://scenes/fsm_editor/fsm_editor.tscn" id="6_0rb1a"]
@@ -12,9 +11,6 @@ script = ExtResource("1_6lwva")
 
 [node name="GridManager" type="Node3D" parent="." unique_id=1187134818]
 script = ExtResource("2_0rb1a")
-
-[node name="CommandRunner" type="Node" parent="." unique_id=1941896346]
-script = ExtResource("3_xtm2k")
 
 [node name="Character" parent="." unique_id=725942461 instance=ExtResource("4_h8kvj")]
 

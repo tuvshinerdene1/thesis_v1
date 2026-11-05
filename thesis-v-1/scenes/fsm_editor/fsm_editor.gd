@@ -32,15 +32,18 @@ func _ready() -> void:
 
 
 func _on_play_pressed() -> void:
-	# validation checks
 	if states.is_empty():
-		print("Error: Cannot play. No states created!")
+		print("error: no states were found")
 		return
+	
 	if start_state_name == "":
-		print("Error: Cannot play. Start state not set!")
+		print("error: no start state was set")
 		return
-	print("Starting FSM with start state: ", start_state_name)
-	emit_signal("fsm_executed", states, start_state_name)
+		
+	print("Sending fsm data to level script")
+	print("States: ",states[0].rules[0].printRule())
+	fsm_executed.emit(states, start_state_name)	
+	
 
 # create state
 func _on_add_state_pressed() -> void:

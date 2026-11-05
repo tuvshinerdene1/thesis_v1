@@ -7,36 +7,8 @@ extends Node3D
 func _ready():
 	_setup_camera()
 	_setup_lighting()
-	# 1. hardcoded test level
-	var test_level = LevelData.new()
-	test_level.level_name = "Test Level 1"
-	test_level.start_position = Vector2i(1,1)
-	test_level.start_direction = GridCharacter.Direction.EAST
-	
-	# 0 = empty, 1 = tree/obstacle, 2 = leaf
-	test_level.grid_data = [
-		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-	]
-	
-	grid_manager.load_level(test_level, character)
-	
-	await get_tree().create_timer(1.0).timeout
-	
-	var states = _create_test_fsm()
-	
-	fsm_runner.character = character
-	fsm_runner.grid_manager = grid_manager
-	fsm_runner.load_fsm(states, "StateMove")
-	fsm_runner.start()
+	_setup_grid()
+	_setup_fsm()
 	
 func _create_test_fsm() -> Array[FSMState]:
 	# --- State 1: Move Forward State ---
@@ -70,7 +42,6 @@ func _create_test_fsm() -> Array[FSMState]:
 	state_turn.rules.append(rule_turn)
 	
 	return [state_move, state_turn]
-	
 func _setup_camera():
 	if get_viewport().get_camera_3d() != null:
 		return
@@ -81,7 +52,6 @@ func _setup_camera():
 	camera.global_position = Vector3(4.0, 12.0, 14.0)
 	camera.look_at(Vector3(4.0, 0.0, 4.0), Vector3.UP)
 	camera.make_current()
-	
 func _setup_lighting():
 	# 1.directional sun light
 	var sun = DirectionalLight3D.new()
@@ -102,3 +72,32 @@ func _setup_lighting():
 	environment.ambient_light_energy = 0.6
 	
 	env_node.environment = environment
+func _setup_grid():
+	# 1. hardcoded test level
+	var test_level = LevelData.new()
+	test_level.level_name = "Test Level 1"
+	test_level.start_position = Vector2i(1,1)
+	test_level.start_direction = GridCharacter.Direction.EAST
+	
+	# 0 = empty, 1 = tree/obstacle, 2 = leaf
+	test_level.grid_data = [
+		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+	]
+	
+	grid_manager.load_level(test_level, character)
+func _setup_fsm():
+	var states = _create_test_fsm()
+	
+	fsm_runner.character = character
+	fsm_runner.grid_manager = grid_manager
+	fsm_runner.load_fsm(states, "StateMove")
+	fsm_runner.start()

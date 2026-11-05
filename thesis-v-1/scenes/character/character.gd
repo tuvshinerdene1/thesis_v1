@@ -1,3 +1,4 @@
+# character.gd (script for character)
 extends Node3D
 class_name GridCharacter
 

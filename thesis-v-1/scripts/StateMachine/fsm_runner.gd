@@ -19,8 +19,10 @@ func load_fsm(state_list: Array[FSMState], start_state_name: String) -> void:
 		print("Error: Start state not found")
 
 func start() -> void:
+	
 	if is_running or not current_state:
 		return
+	print("in fsm_runner.start()")
 	is_running = true
 	_evaluate_current_state()
 

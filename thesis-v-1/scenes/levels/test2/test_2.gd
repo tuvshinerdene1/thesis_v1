@@ -1,55 +1,27 @@
+# test_2.gd (level script)
 extends Node3D
 
 @onready var grid_manager: GridManager = $GridManager
 @onready var character: GridCharacter = $Character
 @onready var fsm_runner: FSMRunner = $FSMRunner
-# Assuming you add your FSMEditor as a child node in your level scene (or instance it)
 @onready var fsm_editor: Control = $FsmEditor
+
+var player_states: Array[FSMState] = []
+var player_start_state_name: String = ""
 
 func _ready():
 	_setup_camera()
 	_setup_lighting()
+	_setup_grid()    
+	fsm_editor.fsm_executed.connect(_on_fsm_executed)
 	
-	# 1. Hardcoded test level setup
-	var test_level = LevelData.new()
-	test_level.level_name = "Test Level 1"
-	test_level.start_position = Vector2i(1,1)
-	test_level.start_direction = GridCharacter.Direction.EAST
-	
-	test_level.grid_data = [
-		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-		[1, 0, 2, 0, 0, 0, 0, 0, 0, 1],
-		[1, 0, 0, 3, 0, 0, 0, 0, 0, 1],
-		[1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-		[1, 0, 0, 0, 0, 1, 0, 0, 0, 1],
-		[1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-		[1, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-	]
-	
-	grid_manager.load_level(test_level, character)
-	
-	# 2. Configure the FSM Runner references
+func _on_fsm_executed(states: Array[FSMState], start_state = ""):
+	player_states = states
+	player_start_state_name = start_state
+	print("state data received in level script")	
 	fsm_runner.character = character
 	fsm_runner.grid_manager = grid_manager
-	
-	# 3. Connect the editor's run signal or handle it directly
-	# Assuming your FSMEditor has a method or signal when the player hits Play:
-	if fsm_editor.has_signal("fsm_executed"):
-		fsm_editor.fsm_executed.connect(_on_fsm_editor_run)
-	else:
-		# Alternatively, you can bind a button reference from the level script:
-		pass
-
-# This function receives the states built by the player in the UI
-func _on_fsm_editor_run(states: Array[FSMState], start_state_name: String) -> void:
-	# Hide editor UI so player can watch simulation
-	fsm_editor.visible = false
-	
-	# Load and run the player's custom FSM!
-	fsm_runner.load_fsm(states, start_state_name)
+	fsm_runner.load_fsm(player_states, player_start_state_name)
 	fsm_runner.start()
 
 func _setup_camera():
@@ -77,3 +49,22 @@ func _setup_lighting():
 	environment.ambient_light_color = Color(1.0, 1.0, 1.0, 1.0)
 	environment.ambient_light_energy = 0.6
 	env_node.environment = environment
+
+func _setup_grid():
+	var test_level = LevelData.new()
+	test_level.level_name = "Test Level 1"
+	test_level.start_position = Vector2i(1,1)
+	test_level.start_direction = GridCharacter.Direction.EAST
+	test_level.grid_data = [
+		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+	]
+	grid_manager.load_level(test_level, character)
