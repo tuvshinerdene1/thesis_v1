@@ -39,7 +39,7 @@ func _evaluate_current_state() -> void:
 	# Search through the state's rows from top to bottom
 	var matched_rule: FSMRule = null
 	for rule in current_state.rules:
-		if _check_all_conditions(rule.conditions):
+		if _evaluate_conditions(rule.conditions):
 			matched_rule = rule
 			break
 	
@@ -85,13 +85,34 @@ func _evaluate_current_state() -> void:
 		print("fsm_runner.gd: No matching rules found in state: ", current_state.state_name)
 		stop()
 
-func _check_all_conditions(conditions: Array) -> bool:
-	if conditions.is_empty():
+func _evaluate_conditions(clauses: Array[ConditionClause]) -> bool:
+	if clauses.is_empty():
 		return true
-	for cond in conditions:
-		if not _evaluate_single_condition(str(cond)):
-			return false
-	return true
+
+	# AND binds tighter than OR: (c0 AND c1) OR (c2 AND c3)
+	var current_and_group: bool = _evaluate_single_clause(clauses[0])
+
+	for i in range(clauses.size() - 1):
+		var connector := clauses[i].logic_with_next.to_upper()
+		var next_val: bool = _evaluate_single_clause(clauses[i + 1])
+
+		if connector == "OR":
+			if current_and_group:
+				return true
+			current_and_group = next_val
+		else: # Default to "AND"
+			current_and_group = current_and_group and next_val
+
+	return current_and_group
+
+func _evaluate_single_clause(clause: ConditionClause) -> bool:
+	if clause == null:
+		return false
+	var callable := ConditionLibrary.get_condition_callable(clause.condition_id, character, grid_manager)
+	if callable.is_null():
+		return false
+	var result: bool = callable.call()
+	return not result if clause.negated else result
 
 func _evaluate_single_condition(condition: String) -> bool:
 	var condition_callable := ConditionLibrary.get_condition_callable(condition, character, grid_manager)

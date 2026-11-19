@@ -47,8 +47,20 @@ text = "Delete State"
 layout_mode = 2
 text = "Set as Start state"
 
+[node name="HBoxContainer2" type="HBoxContainer" parent="HBoxContainer/LeftPanel" unique_id=750317635]
+layout_mode = 2
+
+[node name="LineEdit" type="LineEdit" parent="HBoxContainer/LeftPanel/HBoxContainer2" unique_id=1490558590]
+layout_mode = 2
+placeholder_text = "new name"
+expand_to_text_length = true
+
+[node name="Button" type="Button" parent="HBoxContainer/LeftPanel/HBoxContainer2" unique_id=1291559852]
+layout_mode = 2
+text = "Rename"
+
 [node name="Control" type="Control" parent="HBoxContainer" unique_id=1133843907]
-custom_minimum_size = Vector2(0, 300)
+custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 
 [node name="RightPanel" type="VBoxContainer" parent="HBoxContainer" unique_id=1218194750]
@@ -61,7 +73,7 @@ layout_mode = 2
 text = "Rule matrix"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="HBoxContainer/RightPanel" unique_id=174428444]
-custom_minimum_size = Vector2(0, 100)
+custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 
 [node name="RulesRowContainer" type="VBoxContainer" parent="HBoxContainer/RightPanel/ScrollContainer" unique_id=1416903742]

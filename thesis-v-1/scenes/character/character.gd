@@ -37,7 +37,7 @@ func initialize_at_grid(start_grid_pos: Vector2i, start_dir: Direction = Directi
 	
 	# snap position and rotation in 3d world space
 	global_position = Vector3(grid_position.x * tile_size,size_y/2 , grid_position.y*tile_size)
-	visual_pivot.rotation_degrees.y = DIRECTION_ANGLES[current_direction]
+	visual_pivot.rotation_degrees.y = wrapf(DIRECTION_ANGLES[current_direction], 0.0, 360.0)
 	
 #-----------------------------
 # CORE API FUNCTIONS 
@@ -75,13 +75,30 @@ func turn_right() -> void:
 #-----------------------------
 func get_front_grid_position() -> Vector2i:
 	return grid_position + DIRECTION_VECTORS[current_direction]
+
+func get_right_grid_position() -> Vector2i:
+	var right_dir := _get_relative_direction(1)
+	return grid_position + DIRECTION_VECTORS[right_dir]
+
+func get_left_grid_position() -> Vector2i:
+	var left_dir := _get_relative_direction(-1)
+	return grid_position + DIRECTION_VECTORS[left_dir]
+
+func _get_relative_direction(step_offset: int) -> Direction:
+	return ((current_direction + step_offset) % 4 + 4) % 4 as Direction
 	
 func _animate_rotation() -> void:
 	is_moving = true
-	var target_angle = DIRECTION_ANGLES[current_direction]
+	var target_angle: float = DIRECTION_ANGLES[current_direction]
+	var current_angle: float = visual_pivot.rotation_degrees.y
+	var delta_deg: float = rad_to_deg(angle_difference(deg_to_rad(current_angle), deg_to_rad(target_angle)))
+	var final_angle: float = current_angle + delta_deg
+
 	var tween = create_tween()
-	tween.tween_property(visual_pivot, "rotation_degrees:y", target_angle, step_duration * 0.8 )
-	tween.finished.connect(func(): 
+	tween.tween_property(visual_pivot, "rotation_degrees:y", final_angle, step_duration * 0.8)
+	tween.finished.connect(func():
+		# Keep angle cleanly normalized in [0, 360)
+		visual_pivot.rotation_degrees.y = wrapf(final_angle, 0.0, 360.0)
 		is_moving = false
 		movement_finished.emit()
 	)

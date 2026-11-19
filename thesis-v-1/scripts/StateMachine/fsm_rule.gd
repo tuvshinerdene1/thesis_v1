@@ -1,10 +1,9 @@
 class_name FSMRule
 extends Resource
 
-@export var conditions: Array = []
-@export var actions: Array = []
-@export var target_state_name: String = "" # if left empty or matches current, it loops
-
+@export var conditions: Array[ConditionClause] = []
+@export var actions: Array[String] = []
+@export var target_state_name: String = ""
 func printRule():
 	print("conditions: ", conditions)
 	print("actions: ", actions)

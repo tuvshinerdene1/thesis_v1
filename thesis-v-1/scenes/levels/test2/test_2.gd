@@ -19,6 +19,7 @@ func _on_fsm_executed(states: Array[FSMState], start_state = ""):
 	player_states = states
 	player_start_state_name = start_state
 	print("state data received in level script")	
+	fsm_editor.hide()
 	fsm_runner.character = character
 	fsm_runner.grid_manager = grid_manager
 	fsm_runner.load_fsm(player_states, player_start_state_name)
@@ -30,7 +31,7 @@ func _setup_camera():
 	var camera = Camera3D.new()
 	add_child(camera)
 	camera.global_position = Vector3(4.0, 12.0, 14.0)
-	camera.look_at(Vector3(4.0, 0.0, 4.0), Vector3.UP)
+	camera.look_at(Vector3(4.0, -1.0, 8.0), Vector3.UP)
 	camera.make_current()
 
 func _setup_lighting():
@@ -58,13 +59,14 @@ func _setup_grid():
 	test_level.grid_data = [
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
 		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 1, 1, 1, 1, 1, 1, 1, 1],
 		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
 		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 1, 1, 1, 1, 1, 1, 1, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 3, 1],
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	]
 	grid_manager.load_level(test_level, character)
