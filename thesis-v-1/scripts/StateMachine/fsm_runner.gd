@@ -3,6 +3,9 @@ class_name FSMRunner
 
 #@export var character: GridCharacter
 #@export var grid_manager: GridManager
+signal fsm_stopped
+signal level_completed
+signal level_failed(reason: String)
 
 var character: GridCharacter
 var grid_manager: GridManager
@@ -132,5 +135,19 @@ func _execute_action(action: String) -> void:
 	print("Finished action: ", action)
 
 func stop() -> void:
+	if not is_running:
+		return
 	is_running = false
 	print("FSM stopped.")
+
+	var stopped_on_coin := false
+	if character != null and grid_manager != null:
+		stopped_on_coin = grid_manager.has_coin_at(character.grid_position)
+
+	if stopped_on_coin:
+		print("SUCCESS: Stopped on a coin at ", character.grid_position)
+		level_completed.emit()
+	else:
+		level_failed.emit("Stopped without landing on a coin.")
+
+	fsm_stopped.emit()
