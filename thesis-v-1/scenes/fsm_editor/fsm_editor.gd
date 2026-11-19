@@ -97,16 +97,60 @@ func _on_delete_state_pressed() -> void:
 	_refresh_state_list()
 	for child in rules_row_container.get_children():
 		child.queue_free()
-func _populate_rule_editor(state:FSMState) -> void:
+func _populate_rule_editor(state: FSMState) -> void:
 	for child in rules_row_container.get_children():
 		child.queue_free()
-	
+
+	rules_row_container.add_theme_constant_override("separation", 12)
+
 	for i in range(state.rules.size()):
 		var rule = state.rules[i]
 		_create_rule_row_ui(rule, i)
-		
+		if i < state.rules.size() - 1:
+			var sep := HSeparator.new()
+			rules_row_container.add_child(sep)
+
+
+func _make_rule_card_style() -> StyleBoxFlat:
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color(0.16, 0.18, 0.22, 0.95)
+	style.border_color = Color(0.32, 0.36, 0.44, 1.0)
+	style.set_border_width_all(1)
+	style.set_corner_radius_all(6)
+	style.content_margin_left = 10
+	style.content_margin_right = 10
+	style.content_margin_top = 8
+	style.content_margin_bottom = 8
+	return style
 func _create_rule_row_ui(rule: FSMRule, rule_index: int) -> void:
-	var row_hbox = HBoxContainer.new()
+	var card := PanelContainer.new()
+	card.add_theme_stylebox_override("panel", _make_rule_card_style())
+
+	var card_vbox := VBoxContainer.new()
+	card_vbox.add_theme_constant_override("separation", 6)
+	card.add_child(card_vbox)
+
+	# --- Rule Header (Rule # + Delete button) ---
+	var header_hbox := HBoxContainer.new()
+	var rule_label := Label.new()
+	rule_label.text = "Rule #%d" % (rule_index + 1)
+	rule_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header_hbox.add_child(rule_label)
+
+	var delete_btn := Button.new()
+	delete_btn.text = "Delete Rule"
+	delete_btn.pressed.connect(func():
+		if selected_state_index >= 0 and selected_state_index < states.size():
+			states[selected_state_index].rules.remove_at(rule_index)
+			_populate_rule_editor(states[selected_state_index])
+	)
+	header_hbox.add_child(delete_btn)
+	card_vbox.add_child(header_hbox)
+
+	# --- Rule Body ---
+	var row_hbox := HBoxContainer.new()
+	row_hbox.add_theme_constant_override("separation", 16)
+	card_vbox.add_child(row_hbox)
 
 	# Guarantee at least 1 condition clause per rule
 	var all_conditions = ConditionLibrary.get_all_conditions()
@@ -115,15 +159,20 @@ func _create_rule_row_ui(rule: FSMRule, rule_index: int) -> void:
 		initial_clause.condition_id = all_conditions[0] if not all_conditions.is_empty() else "always"
 		rule.conditions.append(initial_clause)
 
-	# --- 1. Conditions stack (1 or more clauses connected by AND / OR) ---
-	var conds_box = VBoxContainer.new()
+	# --- 1. Conditions stack ---
+	var conds_box := VBoxContainer.new()
+	conds_box.add_theme_constant_override("separation", 4)
+
+	var cond_header := Label.new()
+	cond_header.text = "IF"
+	conds_box.add_child(cond_header)
 
 	for c_idx in range(rule.conditions.size()):
 		var clause: ConditionClause = rule.conditions[c_idx]
-		var clause_row = HBoxContainer.new()
+		var clause_row := HBoxContainer.new()
+		clause_row.add_theme_constant_override("separation", 4)
 
-		# Negation toggle button ("NOT")
-		var not_btn = Button.new()
+		var not_btn := Button.new()
 		not_btn.toggle_mode = true
 		not_btn.button_pressed = clause.negated
 		not_btn.text = "NOT" if clause.negated else "IS"
@@ -134,8 +183,7 @@ func _create_rule_row_ui(rule: FSMRule, rule_index: int) -> void:
 		)
 		clause_row.add_child(not_btn)
 
-		# Condition dropdown
-		var cond_button = OptionButton.new()
+		var cond_button := OptionButton.new()
 		for cond in all_conditions:
 			cond_button.add_item(cond)
 
@@ -151,8 +199,7 @@ func _create_rule_row_ui(rule: FSMRule, rule_index: int) -> void:
 		)
 		clause_row.add_child(cond_button)
 
-		# Remove condition button (only enabled when > 1 condition exists)
-		var remove_cond_btn = Button.new()
+		var remove_cond_btn := Button.new()
 		remove_cond_btn.text = "-"
 		remove_cond_btn.disabled = rule.conditions.size() <= 1
 		remove_cond_btn.tooltip_text = "At least 1 condition is required" if rule.conditions.size() <= 1 else "Remove condition"
@@ -165,9 +212,8 @@ func _create_rule_row_ui(rule: FSMRule, rule_index: int) -> void:
 
 		conds_box.add_child(clause_row)
 
-		# Logic connector ("AND" / "OR") between this clause and the next clause
 		if c_idx < rule.conditions.size() - 1:
-			var logic_btn = Button.new()
+			var logic_btn := Button.new()
 			var current_logic := clause.logic_with_next.to_upper()
 			if current_logic != "AND" and current_logic != "OR":
 				current_logic = "AND"
@@ -180,7 +226,7 @@ func _create_rule_row_ui(rule: FSMRule, rule_index: int) -> void:
 			)
 			conds_box.add_child(logic_btn)
 
-	var add_cond_btn = Button.new()
+	var add_cond_btn := Button.new()
 	add_cond_btn.text = "+ Cond"
 	add_cond_btn.pressed.connect(func():
 		var extra = ConditionClause.new()
@@ -193,13 +239,24 @@ func _create_rule_row_ui(rule: FSMRule, rule_index: int) -> void:
 	conds_box.add_child(add_cond_btn)
 	row_hbox.add_child(conds_box)
 
-	# --- 2. Actions stack (0, 1, or many actions) ---
-	var actions_box = VBoxContainer.new()
+	var v_sep := VSeparator.new()
+	row_hbox.add_child(v_sep)
+
+	# --- 2. Actions stack ---
+	var actions_box := VBoxContainer.new()
+	actions_box.add_theme_constant_override("separation", 4)
+
+	var act_header := Label.new()
+	act_header.text = "DO"
+	actions_box.add_child(act_header)
+
 	var all_actions = ActionLibrary.get_all_actions()
 
 	for a_idx in range(rule.actions.size()):
-		var act_row = HBoxContainer.new()
-		var act_btn = OptionButton.new()
+		var act_row := HBoxContainer.new()
+		act_row.add_theme_constant_override("separation", 4)
+
+		var act_btn := OptionButton.new()
 		for action in all_actions:
 			act_btn.add_item(action)
 
@@ -217,7 +274,7 @@ func _create_rule_row_ui(rule: FSMRule, rule_index: int) -> void:
 		)
 		act_row.add_child(act_btn)
 
-		var remove_act_btn = Button.new()
+		var remove_act_btn := Button.new()
 		remove_act_btn.text = "-"
 		remove_act_btn.pressed.connect(func():
 			rule.actions.remove_at(captured_a_idx)
@@ -227,7 +284,7 @@ func _create_rule_row_ui(rule: FSMRule, rule_index: int) -> void:
 
 		actions_box.add_child(act_row)
 
-	var add_act_btn = Button.new()
+	var add_act_btn := Button.new()
 	add_act_btn.text = "+ Action"
 	add_act_btn.pressed.connect(func():
 		if not all_actions.is_empty():
@@ -237,8 +294,18 @@ func _create_rule_row_ui(rule: FSMRule, rule_index: int) -> void:
 	actions_box.add_child(add_act_btn)
 	row_hbox.add_child(actions_box)
 
-	# --- 3. Target state dropdown ---
-	var target_button = OptionButton.new()
+	var v_sep2 := VSeparator.new()
+	row_hbox.add_child(v_sep2)
+
+	# --- 3. Target state column ---
+	var target_box := VBoxContainer.new()
+	target_box.add_theme_constant_override("separation", 4)
+
+	var target_header := Label.new()
+	target_header.text = "NEXT"
+	target_box.add_child(target_header)
+
+	var target_button := OptionButton.new()
 	target_button.add_item("Loop Current")
 	target_button.add_item("Stop")
 	for s in states:
@@ -265,20 +332,10 @@ func _create_rule_row_ui(rule: FSMRule, rule_index: int) -> void:
 		else:
 			rule.target_state_name = txt
 	)
-	row_hbox.add_child(target_button)
+	target_box.add_child(target_button)
+	row_hbox.add_child(target_box)
 
-	# --- 4. Delete entire rule row ---
-	var delete_btn = Button.new()
-	delete_btn.text = "X"
-	delete_btn.pressed.connect(func():
-		if selected_state_index >= 0 and selected_state_index < states.size():
-			states[selected_state_index].rules.remove_at(rule_index)
-			_populate_rule_editor(states[selected_state_index])
-	)
-	row_hbox.add_child(delete_btn)
-
-	rules_row_container.add_child(row_hbox)
-
+	rules_row_container.add_child(card)
 func _on_add_rule_pressed() -> void:
 	if selected_state_index < 0:
 		return

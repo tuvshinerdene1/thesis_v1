@@ -64,7 +64,7 @@ custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 
 [node name="RightPanel" type="VBoxContainer" parent="HBoxContainer" unique_id=1218194750]
-custom_minimum_size = Vector2(500, 0)
+custom_minimum_size = Vector2(800, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 

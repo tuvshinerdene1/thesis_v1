@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://2874yj0ah1pt"]
+
+[ext_resource type="Script" uid="uid://kuo0w0kd2we8" path="res://scenes/levels/test3/test_3.gd" id="1_h4eux"]
+[ext_resource type="Script" uid="uid://d3447bwc37udk" path="res://scripts/GridManager.gd" id="2_tkgp6"]
+[ext_resource type="PackedScene" uid="uid://cit78ynwj1ilt" path="res://scenes/character/Character.tscn" id="3_vxnsm"]
+[ext_resource type="Script" uid="uid://brayrn2fcwbib" path="res://scripts/StateMachine/fsm_runner.gd" id="4_n0a80"]
+[ext_resource type="PackedScene" uid="uid://7lysjnxke5i" path="res://scenes/fsm_editor/fsm_editor.tscn" id="5_m2j71"]
+
+[node name="Test3" type="Node3D" unique_id=1455117866]
+script = ExtResource("1_h4eux")
+
+[node name="GridManager" type="Node3D" parent="." unique_id=1187134818]
+script = ExtResource("2_tkgp6")
+
+[node name="Character" parent="." unique_id=725942461 instance=ExtResource("3_vxnsm")]
+
+[node name="FSMRunner" type="Node" parent="." unique_id=1023868886]
+script = ExtResource("4_n0a80")
+
+[node name="FsmEditor" parent="." unique_id=1837411341 node_paths=PackedStringArray("fsm_runner", "game_world") instance=ExtResource("5_m2j71")]
+fsm_runner = NodePath("../FSMRunner")
+game_world = NodePath("..")
