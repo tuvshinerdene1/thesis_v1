@@ -14,6 +14,7 @@ var win_center: CenterContainer
 var win_panel: PanelContainer
 var win_label: Label
 var retry_button: Button
+var next_level_button : Button
 
 
 var level_camera: Camera3D
@@ -77,6 +78,12 @@ func _setup_win_ui() -> void:
 	retry_button.custom_minimum_size = Vector2(180, 40)
 	retry_button.pressed.connect(_on_retry_pressed)
 	vbox.add_child(retry_button)
+	
+	next_level_button = Button.new()
+	next_level_button.text = "Next Level"
+	next_level_button.custom_minimum_size = Vector2(180, 40)
+	next_level_button.pressed.connect(_on_next_level_pressed)
+	vbox.add_child(next_level_button)
 
 func _setup_camera():
 	if get_viewport().get_camera_3d() != null:
@@ -121,7 +128,15 @@ func _setup_grid():
 	test_level.start_direction = GridCharacter.Direction.EAST
 	test_level.grid_data = [
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 3, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 1, 1, 0, 1, 0, 0, 1, 0, 1],
+		[1, 0, 1, 0, 1, 0, 0, 1, 0, 1],
+		[1, 0, 1, 0, 1, 0, 0, 1, 0, 1],
+		[1, 0, 1, 0, 1, 0, 0, 1, 0, 1],
+		[1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
+		[1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
+		[1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
+		[1, 0, 1, 0, 1, 0, 1, 0, 3, 1],
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	]
 	grid_manager.load_level(test_level, character)
@@ -152,7 +167,6 @@ func _on_retry_pressed() -> void:
 	_setup_grid()
 	if fsm_editor:
 		fsm_editor.show()
-
 func _on_level_failed(reason: String) -> void:
 	print("Run ended: ", reason)
 	_set_win_ui_visible(false)
@@ -194,3 +208,9 @@ func _start_win_camera_orbit(radius: float = 5.5, height_offset: float = 3.5, du
 		start_angle + TAU,
 		duration
 	)
+func _on_next_level_pressed() -> void:
+	_set_win_ui_visible(false)
+	_reset_camera_to_default()
+	# If LevelManager is an Autoload named "LevelManager", call it directly:
+	if Engine.has_singleton("LevelManager") or has_node("/root/LevelManager"):
+		get_node("/root/LevelManager").load_next_level()
