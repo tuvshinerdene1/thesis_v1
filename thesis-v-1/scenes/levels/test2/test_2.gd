@@ -1,4 +1,4 @@
-# test_2.gd (level script)
+# level_2.gd (level script)
 extends Node3D
 
 @onready var grid_manager: GridManager = $GridManager
@@ -14,7 +14,7 @@ func _ready():
 	_setup_lighting()
 	_setup_grid()    
 	fsm_editor.fsm_executed.connect(_on_fsm_executed)
-	
+
 func _on_fsm_executed(states: Array[FSMState], start_state = ""):
 	player_states = states
 	player_start_state_name = start_state

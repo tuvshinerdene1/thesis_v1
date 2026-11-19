@@ -43,13 +43,8 @@ text = "Add State"
 layout_mode = 2
 text = "Delete State"
 
-[node name="HSeparator" type="HSeparator" parent="HBoxContainer/LeftPanel" unique_id=1632985099]
+[node name="SetAsStartButton" type="Button" parent="HBoxContainer/LeftPanel/HBoxContainer" unique_id=478532629]
 layout_mode = 2
-
-[node name="SetAsStartButton" type="Button" parent="HBoxContainer/LeftPanel/HSeparator" unique_id=478532629]
-layout_mode = 0
-offset_right = 139.0
-offset_bottom = 31.0
 text = "Set as Start state"
 
 [node name="Control" type="Control" parent="HBoxContainer" unique_id=1133843907]

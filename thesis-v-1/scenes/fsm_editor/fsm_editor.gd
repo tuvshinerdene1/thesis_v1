@@ -1,3 +1,4 @@
+# fsm_editor.gd
 extends Control
 
 signal fsm_executed(states: Array[FSMState], start_state_name: String)
@@ -17,7 +18,7 @@ var start_state_name = ""
 @onready var play_button: Button = $PlayButton
 @onready var add_state_button: Button = $HBoxContainer/LeftPanel/HBoxContainer/AddButton
 @onready var delete_state_button: Button = $HBoxContainer/LeftPanel/HBoxContainer/DeleteButton
-@onready var set_start_button: Button =  $HBoxContainer/LeftPanel/HSeparator/SetAsStartButton
+@onready var set_start_button: Button =  $HBoxContainer/LeftPanel/HBoxContainer/SetAsStartButton
 @onready var add_rule_button: Button = $HBoxContainer/RightPanel/AddRuleButton
 
 
@@ -35,14 +36,15 @@ func _on_play_pressed() -> void:
 	if states.is_empty():
 		print("error: no states were found")
 		return
-	
+
 	if start_state_name == "":
 		print("error: no start state was set")
 		return
-		
+
 	print("Sending fsm data to level script")
-	print("States: ",states[0].rules[0].printRule())
-	fsm_executed.emit(states, start_state_name)	
+	if not states[0].rules.is_empty():
+		states[0].rules[0].printRule()
+	fsm_executed.emit(states, start_state_name)
 	
 
 # create state
@@ -85,65 +87,73 @@ func _populate_rule_editor(state:FSMState) -> void:
 		var rule = state.rules[i]
 		_create_rule_row_ui(rule, i)
 		
-func _create_rule_row_ui(rule:FSMRule, rule_index: int) -> void:
+func _create_rule_row_ui(rule: FSMRule, rule_index: int) -> void:
 	var row_hbox = HBoxContainer.new()
-	
-	# condition dropdown
+
+	# --- Condition dropdown ---
 	var cond_button = OptionButton.new()
 	var all_conditions = ConditionLibrary.get_all_conditions()
-	
+
 	for cond in all_conditions:
 		cond_button.add_item(cond)
-	
-	if not rule.conditions.is_empty():
+
+	if rule.conditions.is_empty() and not all_conditions.is_empty():
+		rule.conditions = [all_conditions[0]]
+		cond_button.select(0)
+	else:
 		var current_cond = str(rule.conditions[0])
 		var idx = all_conditions.find(current_cond)
-		if idx != -1:
-			cond_button.select(idx)
-	
-	# set selected based on rule.conditions...
-	cond_button.item_selected.connect(func(idx):
+		cond_button.select(idx if idx != -1 else 0)
+		if idx == -1 and not all_conditions.is_empty():
+			rule.conditions = [all_conditions[0]]
+
+	cond_button.item_selected.connect(func(idx: int):
 		rule.conditions = [cond_button.get_item_text(idx)]
 	)
 	row_hbox.add_child(cond_button)
-	
-	# action dropdown
+
+	# --- Action dropdown ---
 	var action_button = OptionButton.new()
 	var all_actions = ActionLibrary.get_all_actions()
-	
+
 	for action in all_actions:
 		action_button.add_item(action)
-	
-	if not rule.actions.is_empty():
+
+	if rule.actions.is_empty() and not all_actions.is_empty():
+		rule.actions = [all_actions[0]]
+		action_button.select(0)
+	else:
 		var current_action = str(rule.actions[0])
 		var idx = all_actions.find(current_action)
-		if idx != -1:
-			action_button.select(idx)
-			
-	action_button.item_selected.connect(func(idx):
-		rule.actions = [action_button.get_item_text(idx)]	
+		action_button.select(idx if idx != -1 else 0)
+		if idx == -1 and not all_actions.is_empty():
+			rule.actions = [all_actions[0]]
+
+	action_button.item_selected.connect(func(idx: int):
+		rule.actions = [action_button.get_item_text(idx)]
 	)
 	row_hbox.add_child(action_button)
-	
-	# target state dropdown (or stop)
+
+	# --- Target state dropdown ---
 	var target_button = OptionButton.new()
 	target_button.add_item("Loop Current")
 	target_button.add_item("Stop")
 	for s in states:
 		target_button.add_item(s.state_name)
-	
-	## pre-select target state 
+
 	if rule.target_state_name == "Stop":
 		target_button.select(1)
 	elif rule.target_state_name == "":
 		target_button.select(0)
 	else:
+		var found_idx := 0
 		for i in range(2, target_button.get_item_count()):
 			if target_button.get_item_text(i) == rule.target_state_name:
-				target_button.select(i)
+				found_idx = i
 				break
-				
-	target_button.item_selected.connect(func(idx):
+		target_button.select(found_idx)
+
+	target_button.item_selected.connect(func(idx: int):
 		var txt = target_button.get_item_text(idx)
 		if txt == "Loop Current":
 			rule.target_state_name = ""
@@ -151,21 +161,20 @@ func _create_rule_row_ui(rule:FSMRule, rule_index: int) -> void:
 			rule.target_state_name = "Stop"
 		else:
 			rule.target_state_name = txt
-
 	)
 	row_hbox.add_child(target_button)
-	
-	# delete row button
+
+	# --- Delete row button ---
 	var delete_btn = Button.new()
 	delete_btn.text = "X"
 	delete_btn.pressed.connect(func():
-		states[selected_state_index].rules.remove_at(rule_index)
-		_populate_rule_editor(states[selected_state_index])
+		if selected_state_index >= 0 and selected_state_index < states.size():
+			states[selected_state_index].rules.remove_at(rule_index)
+			_populate_rule_editor(states[selected_state_index])
 	)
 	row_hbox.add_child(delete_btn)
-	
-	rules_row_container.add_child(row_hbox)
 
+	rules_row_container.add_child(row_hbox)
 func _on_add_rule_pressed() -> void:
 	if selected_state_index < 0:
 		return
@@ -178,5 +187,3 @@ func _on_set_start_state_pressed() -> void:
 		return
 	start_state_name = states[selected_state_index].state_name
 	_refresh_state_list()	
-	
-	
