@@ -86,16 +86,17 @@ func _setup_win_ui() -> void:
 	vbox.add_child(next_level_button)
 
 func _setup_camera():
-	if get_viewport().get_camera_3d() != null:
-		level_camera = get_viewport().get_camera_3d()
+	var existing_cam := get_viewport().get_camera_3d()
+	if existing_cam != null and not existing_cam.is_queued_for_deletion():
+		level_camera = existing_cam
 		return
+
 	var camera := Camera3D.new()
 	add_child(camera)
 	level_camera = camera
 
 	_reset_camera_to_default()
 	camera.make_current()
-
 func _reset_camera_to_default() -> void:
 	if camera_orbit_tween and camera_orbit_tween.is_valid():
 		camera_orbit_tween.kill()

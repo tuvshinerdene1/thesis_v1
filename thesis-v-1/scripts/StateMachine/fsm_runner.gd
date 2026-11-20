@@ -36,7 +36,13 @@ func start() -> void:
 func _evaluate_current_state() -> void:
 	if not is_running or not current_state:
 		return
-		
+
+	# Check coin first before evaluating state rules
+	if character != null and grid_manager != null and grid_manager.has_coin_at(character.grid_position):
+		print("Player reached coin at ", character.grid_position)
+		stop()
+		return
+
 	print("Evaluating state: ", current_state.state_name)
 	
 	# Search through the state's rows from top to bottom

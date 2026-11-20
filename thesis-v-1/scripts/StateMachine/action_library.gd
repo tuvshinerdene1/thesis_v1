@@ -3,7 +3,7 @@ extends RefCounted
 
 static func get_all_actions() -> Array[String]:
 	return [
-		"move",
+		"move_forward",
 		"turn_left",
 		"turn_right"
 	]
@@ -11,7 +11,7 @@ static func get_all_actions() -> Array[String]:
 # Static helper or resource registry that returns a Callable for any action string
 static func get_action_callable(action_name: String, character: GridCharacter, grid_manager: GridManager, runner: FSMRunner) -> Callable:
 	match action_name:
-		"move":
+		"move_forward":
 			return func():
 				var front_pos = character.get_front_grid_position()
 				if grid_manager.is_tree_at(front_pos):

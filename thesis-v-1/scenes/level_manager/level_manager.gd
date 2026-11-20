@@ -45,6 +45,40 @@ func _unhandled_input(event: InputEvent) -> void:
 # =========================================================
 
 func load_level(index: int) -> void:
+	call_deferred("_load_level_deferred", index)
+
+
+func restart_level() -> void:
+	if current_level_index >= 0:
+		load_level(current_level_index)
+
+
+func load_next_level() -> void:
+	var next_idx: int = current_level_index + 1
+	if next_idx < levels.size():
+		load_level(next_idx)
+	else:
+		call_deferred("_finish_all_levels")
+
+
+func return_to_start_menu() -> void:
+	call_deferred("_return_to_start_menu_deferred")
+
+
+func _finish_all_levels() -> void:
+	_clear_current_level()
+	current_level_index = -1
+	_show_start_menu()
+
+
+func _return_to_start_menu_deferred() -> void:
+	resume_game()
+	_clear_current_level()
+	current_level_index = -1
+	_show_start_menu()
+
+
+func _load_level_deferred(index: int) -> void:
 	if index < 0 or index >= levels.size():
 		print("LevelManager: Invalid level index ", index)
 		return
@@ -62,7 +96,6 @@ func load_level(index: int) -> void:
 	current_level_node = packed.instantiate()
 	add_child(current_level_node)
 
-	# Connect to FSMRunner's level_completed signal if present in the level
 	var runner: Node = _find_fsm_runner(current_level_node)
 	if runner != null and runner.has_signal("level_completed"):
 		if not runner.level_completed.is_connected(_on_current_level_completed):
@@ -73,25 +106,12 @@ func load_level(index: int) -> void:
 	level_changed.emit(current_level_index, path)
 
 
-func restart_level() -> void:
-	if current_level_index >= 0:
-		load_level(current_level_index)
-
-
-func load_next_level() -> void:
-	var next_idx: int = current_level_index + 1
-	if next_idx < levels.size():
-		load_level(next_idx)
-	else:
-		# All levels finished -> return to Start Menu
-		_clear_current_level()
-		_show_start_menu()
-
-
 func _clear_current_level() -> void:
-	if current_level_node != null:
-		current_level_node.queue_free()
+	if current_level_node != null and is_instance_valid(current_level_node):
+		current_level_node.free()
 		current_level_node = null
+
+
 
 
 func _find_fsm_runner(root: Node) -> Node:
@@ -106,6 +126,8 @@ func _find_fsm_runner(root: Node) -> Node:
 
 func _on_current_level_completed() -> void:
 	print("LevelManager: Level %d completed!" % (current_level_index + 1))
+	
+
 
 
 # =========================================================
@@ -125,13 +147,6 @@ func resume_game() -> void:
 	is_paused = false
 	get_tree().paused = false
 	pause_overlay.visible = false
-
-
-func return_to_start_menu() -> void:
-	resume_game()
-	_clear_current_level()
-	current_level_index = -1
-	_show_start_menu()
 
 
 func _show_start_menu() -> void:
