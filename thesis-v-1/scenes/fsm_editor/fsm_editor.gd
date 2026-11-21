@@ -57,6 +57,9 @@ func _on_add_state_pressed() -> void:
 	var new_state = FSMState.new()
 	new_state.state_name = "State_" + str(states.size() + 1)
 	states.append(new_state)
+	if states.size() == 1:
+		start_state_name = states[selected_state_index].state_name
+		
 	_refresh_state_list()
 
 ## delete state
