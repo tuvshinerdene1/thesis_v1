@@ -4,4 +4,4 @@
 
 [node name="LevelManager" type="Node3D" unique_id=721212550]
 script = ExtResource("1_hl701")
-levels = Array[String](["res://scenes/levels/test1/test_1.tscn", "res://scenes/levels/test2/test_2.tscn", "res://scenes/levels/test3/test_3.tscn"])
+levels = Array[String](["res://scenes/levels/test1/test_1.tscn", "res://scenes/levels/test2/test_2.tscn", "res://scenes/levels/test3/test_3.tscn", "res://scenes/levels/test4/test_4.tscn"])

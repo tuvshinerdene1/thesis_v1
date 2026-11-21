@@ -126,8 +126,10 @@ func _make_rule_card_style() -> StyleBoxFlat:
 	style.content_margin_bottom = 8
 	return style
 func _create_rule_row_ui(rule: FSMRule, rule_index: int) -> void:
-	var card := PanelContainer.new()
+	var card := RuleCard.new()
+	card.rule_index = rule_index
 	card.add_theme_stylebox_override("panel", _make_rule_card_style())
+	card.rule_reordered.connect(_on_rule_reordered)
 
 	var card_vbox := VBoxContainer.new()
 	card_vbox.add_theme_constant_override("separation", 6)
@@ -390,3 +392,95 @@ func _on_rename_state_pressed() -> void:
 	_refresh_state_list()
 	state_item_list.select(selected_state_index)
 	_populate_rule_editor(state)
+class RuleCard extends PanelContainer:
+	signal rule_reordered(from_idx: int, to_idx: int)
+
+	var rule_index: int = -1
+	var _drop_line: ColorRect
+
+	func _ready() -> void:
+		mouse_filter = Control.MOUSE_FILTER_STOP
+		tooltip_text = "Drag to reorder rule priority (top = checked first)"
+
+		_drop_line = ColorRect.new()
+		_drop_line.color = Color(0.35, 0.78, 0.45, 1.0)
+		_drop_line.custom_minimum_size = Vector2(0, 3)
+		_drop_line.visible = false
+		_drop_line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		add_child(_drop_line)
+
+	func _get_drag_data(_at_position: Vector2) -> Variant:
+		var preview := PanelContainer.new()
+		preview.custom_minimum_size = Vector2(size.x, 42)
+		var style := StyleBoxFlat.new()
+		style.bg_color = Color(0.22, 0.26, 0.34, 0.9)
+		style.border_color = Color(0.35, 0.78, 0.45, 1.0)
+		style.set_border_width_all(1)
+		style.set_corner_radius_all(4)
+		preview.add_theme_stylebox_override("panel", style)
+
+		var lbl := Label.new()
+		lbl.text = "Moving Rule #%d..." % (rule_index + 1)
+		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		preview.add_child(lbl)
+
+		set_drag_preview(preview)
+		return {"type": "fsm_rule", "from_index": rule_index}
+
+	func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
+		var valid :bool= typeof(data) == TYPE_DICTIONARY and data.get("type") == "fsm_rule"
+		if valid:
+			var insert_before := at_position.y < size.y * 0.5
+			_show_drop_indicator(insert_before)
+		else:
+			_hide_drop_indicator()
+		return valid
+
+	func _drop_data(at_position: Vector2, data: Variant) -> void:
+		_hide_drop_indicator()
+		if typeof(data) != TYPE_DICTIONARY or data.get("type") != "fsm_rule":
+			return
+
+		var from_idx: int = data.get("from_index", -1)
+		if from_idx < 0:
+			return
+
+		var insert_before := at_position.y < size.y * 0.5
+		var target_idx := rule_index if insert_before else rule_index + 1
+
+		if from_idx < target_idx:
+			target_idx -= 1
+
+		if target_idx != from_idx:
+			rule_reordered.emit(from_idx, target_idx)
+
+	func _notification(what: int) -> void:
+		if what == NOTIFICATION_DRAG_END:
+			_hide_drop_indicator()
+
+	func _show_drop_indicator(top: bool) -> void:
+		_drop_line.visible = true
+		_drop_line.position = Vector2(0, 0 if top else size.y - _drop_line.custom_minimum_size.y)
+		_drop_line.size.x = size.x
+
+	func _hide_drop_indicator() -> void:
+		if _drop_line:
+			_drop_line.visible = false
+func _on_rule_reordered(from_idx: int, to_idx: int) -> void:
+	if selected_state_index < 0 or selected_state_index >= states.size():
+		return
+
+	var rules: Array[FSMRule] = states[selected_state_index].rules
+	if from_idx < 0 or from_idx >= rules.size():
+		return
+
+	to_idx = clampi(to_idx, 0, rules.size() - 1)
+	if from_idx == to_idx:
+		return
+
+	var moved_rule: FSMRule = rules[from_idx]
+	rules.remove_at(from_idx)
+	rules.insert(to_idx, moved_rule)
+
+	_populate_rule_editor(states[selected_state_index])
