@@ -73,6 +73,9 @@ func turn_right() -> void:
 #-----------------------------
 # SENSOR & HELPER FUNCTIONS
 #-----------------------------
+func get_current_position() -> Vector2i:
+	return grid_position
+
 func get_front_grid_position() -> Vector2i:
 	return grid_position + DIRECTION_VECTORS[current_direction]
 

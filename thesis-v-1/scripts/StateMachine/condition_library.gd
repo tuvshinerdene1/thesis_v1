@@ -4,9 +4,9 @@ extends RefCounted
 static func get_all_conditions() -> Array[String]:
 	return [
 		"front_is_tree",
-		"front_has_leaf",
 		"left_is_tree",
 		"right_is_tree",
+		"on_the_leaf",
 		"always"
 	]
 
@@ -20,9 +20,9 @@ static func get_condition_callable(condition_name: String, character: GridCharac
 			return func() -> bool:
 				return grid_manager.is_tree_at(character.get_front_grid_position())
 
-		"front_has_leaf":
+		"on_the_leaf":
 			return func() -> bool:
-				return grid_manager.has_leaf_at(character.get_front_grid_position())
+				return grid_manager.has_leaf_at(character.get_current_position())
 
 		"left_is_tree":
 			return func() -> bool:
